@@ -1,0 +1,60 @@
+# Подключаем библиотеки
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import svm
+import random
+import time
+
+# Генерируем случайные данные
+def generate_data(n_samples, n_features):
+  X = np.random.randn(n_samples, n_features)
+  y = [random.choice([-1, 1]) for j in range(n_samples)]
+  return X, y
+
+# Решаем задачу классификации SVM
+def svm_classification(X_train, y_train):
+  clf = svm.SVC(kernel='linear')
+  clf.fit(X_train, y_train)
+  coefs=clf.coef_
+  return coefs
+
+# Задаем параметры эксперимента
+n_samples = 100
+n_features = 100
+n_tests = 100
+
+# Массивы времени работы программы и размерности соответственно
+messi_time=[]
+n_values=[]
+
+# Запускаем цикл для разных размерностей
+for i in range(10,n_features +10,10):
+  n_values.append(i)
+  flag=0
+  average_time=0
+  # Запускаем цикл тестов
+  for j in range(n_tests):
+    # Генерируем обучающую выборку
+    X_train, y_train = generate_data(n_samples, i)
+    # Решаем задачу классификации SVM
+    if not flag:
+     print("Размерность: ", i)
+     #print('Коэффициенты вектора, по которому происходит классификация= ', svm_classification(X_train, y_train))
+     flag=1
+    # Засекаем работы программы
+    start_time = time.time()
+    svm_classification(X_train, y_train)
+    end_time=time.time()
+    exact_time= end_time - start_time
+    average_time+=exact_time
+  # Заполняем массив среднего времени работы
+  average_time=average_time/n_tests
+  messi_time.append(average_time)
+
+# Выводим график времени работы в зависимости от размерности
+plt.plot(n_values, messi_time)
+plt.xlabel("Размерность вектора переменных")
+plt.ylabel("Среднее время решения, секунды")
+plt.show()
+
+del messi_time
